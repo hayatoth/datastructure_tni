@@ -1,0 +1,327 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Scanner;
+
+class Song {
+    String title;
+    String artist;
+
+    Song(String title, String artist) {
+        this.title = title;
+        this.artist = artist;
+    }
+
+    @Override
+    public String toString() {
+        return title + " - " + artist;
+    }
+}
+
+class Playlist {
+    String name;
+    ArrayList<Song> songs;
+
+    Playlist(String name) {
+        this.name = name;
+        this.songs = new ArrayList<>();
+    }
+
+    // เพิ่มเพลง
+    void addSong(Song song) {
+        songs.add(song);
+        System.out.println("เพิ่มเพลงสำเร็จ!");
+    }
+
+    // ลบเพลง
+    void removeSong(int index) {
+        if (index >= 0 && index < songs.size()) {
+            System.out.println("ลบเพลง: " + songs.get(index));
+            songs.remove(index);
+            System.out.println("ลบเพลงสำเร็จ!");
+        } else {
+            System.out.println("ไม่พบเพลงที่เลือก");
+        }
+    }
+
+    // แสดงเพลงทั้งหมด
+    void showSongs() {
+        if (songs.isEmpty()) {
+            System.out.println("Playlist นี้ยังไม่มีเพลง");
+            return;
+        }
+
+        System.out.println("\n===== " + name + " =====");
+
+        for (int i = 0; i < songs.size(); i++) {
+            System.out.println((i + 1) + ". " + songs.get(i));
+        }
+    }
+
+    // ค้นหาเพลง
+    void searchSong(String keyword) {
+        boolean found = false;
+
+        System.out.println("\n===== ผลการค้นหา =====");
+
+        for (Song song : songs) {
+            if (song.title.toLowerCase().contains(keyword.toLowerCase())
+                    || song.artist.toLowerCase().contains(keyword.toLowerCase())) {
+
+                System.out.println(song);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("ไม่พบเพลงที่ค้นหา");
+        }
+    }
+
+    // เรียงเพลงตามชื่อเพลง
+    void sortSongs() {
+        Collections.sort(songs, Comparator.comparing(
+                song -> song.title.toLowerCase()
+        ));
+
+        System.out.println("จัดเรียงเพลงตามชื่อเรียบร้อยแล้ว");
+    }
+}
+
+public class PlaylistSystem {
+
+    static Scanner scanner = new Scanner(System.in);
+    static ArrayList<Playlist> playlists = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        int choice;
+
+        do {
+            System.out.println("\n================================");
+            System.out.println("      PLAYLIST MANAGEMENT");
+            System.out.println("================================");
+            System.out.println("1. สร้าง Playlist");
+            System.out.println("2. แสดง Playlist ทั้งหมด");
+            System.out.println("3. เพิ่มเพลงใน Playlist");
+            System.out.println("4. ลบเพลงจาก Playlist");
+            System.out.println("5. แสดงเพลงใน Playlist");
+            System.out.println("6. ค้นหาเพลง");
+            System.out.println("7. จัดเรียงเพลง");
+            System.out.println("8. ลบ Playlist");
+            System.out.println("0. ออกจากโปรแกรม");
+            System.out.println("================================");
+
+            System.out.print("เลือกเมนู: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    createPlaylist();
+                    break;
+
+                case 2:
+                    showPlaylists();
+                    break;
+
+                case 3:
+                    addSongToPlaylist();
+                    break;
+
+                case 4:
+                    removeSongFromPlaylist();
+                    break;
+
+                case 5:
+                    showPlaylistSongs();
+                    break;
+
+                case 6:
+                    searchSong();
+                    break;
+
+                case 7:
+                    sortPlaylist();
+                    break;
+
+                case 8:
+                    deletePlaylist();
+                    break;
+
+                case 0:
+                    System.out.println("ออกจากโปรแกรม");
+                    break;
+
+                default:
+                    System.out.println("กรุณาเลือกเมนู 0-8");
+            }
+
+        } while (choice != 0);
+
+        scanner.close();
+    }
+
+    // 1. สร้าง Playlist
+    static void createPlaylist() {
+
+        System.out.print("ชื่อ Playlist: ");
+        String name = scanner.nextLine();
+
+        playlists.add(new Playlist(name));
+
+        System.out.println("สร้าง Playlist \"" + name + "\" สำเร็จ!");
+    }
+
+    // 2. แสดง Playlist
+    static void showPlaylists() {
+
+        if (playlists.isEmpty()) {
+            System.out.println("ยังไม่มี Playlist");
+            return;
+        }
+
+        System.out.println("\n===== PLAYLISTS =====");
+
+        for (int i = 0; i < playlists.size(); i++) {
+            System.out.println(
+                    (i + 1) + ". "
+                    + playlists.get(i).name
+                    + " (" + playlists.get(i).songs.size()
+                    + " เพลง)"
+            );
+        }
+    }
+
+    // เลือก Playlist
+    static Playlist selectPlaylist() {
+
+        if (playlists.isEmpty()) {
+            System.out.println("ยังไม่มี Playlist");
+            return null;
+        }
+
+        showPlaylists();
+
+        System.out.print("เลือก Playlist: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        if (index < 1 || index > playlists.size()) {
+            System.out.println("ไม่พบ Playlist");
+            return null;
+        }
+
+        return playlists.get(index - 1);
+    }
+
+    // 3. เพิ่มเพลง
+    static void addSongToPlaylist() {
+
+        Playlist playlist = selectPlaylist();
+
+        if (playlist == null) {
+            return;
+        }
+
+        System.out.print("ชื่อเพลง: ");
+        String title = scanner.nextLine();
+
+        System.out.print("ชื่อศิลปิน: ");
+        String artist = scanner.nextLine();
+
+        Song song = new Song(title, artist);
+
+        playlist.addSong(song);
+    }
+
+    // 4. ลบเพลง
+    static void removeSongFromPlaylist() {
+
+        Playlist playlist = selectPlaylist();
+
+        if (playlist == null) {
+            return;
+        }
+
+        playlist.showSongs();
+
+        if (playlist.songs.isEmpty()) {
+            return;
+        }
+
+        System.out.print("เลือกหมายเลขเพลงที่ต้องการลบ: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        playlist.removeSong(index - 1);
+    }
+
+    // 5. แสดงเพลง
+    static void showPlaylistSongs() {
+
+        Playlist playlist = selectPlaylist();
+
+        if (playlist != null) {
+            playlist.showSongs();
+        }
+    }
+
+    // 6. ค้นหาเพลง
+    static void searchSong() {
+
+        Playlist playlist = selectPlaylist();
+
+        if (playlist == null) {
+            return;
+        }
+
+        System.out.print("กรอกชื่อเพลงหรือศิลปิน: ");
+        String keyword = scanner.nextLine();
+
+        playlist.searchSong(keyword);
+    }
+
+    // 7. จัดเรียงเพลง
+    static void sortPlaylist() {
+
+        Playlist playlist = selectPlaylist();
+
+        if (playlist == null) {
+            return;
+        }
+
+        playlist.sortSongs();
+    }
+
+    // 8. ลบ Playlist
+    static void deletePlaylist() {
+
+        if (playlists.isEmpty()) {
+            System.out.println("ยังไม่มี Playlist");
+            return;
+        }
+
+        showPlaylists();
+
+        System.out.print("เลือก Playlist ที่ต้องการลบ: ");
+        int index = scanner.nextInt();
+        scanner.nextLine();
+
+        if (index >= 1 && index <= playlists.size()) {
+
+            System.out.println(
+                    "ลบ Playlist: "
+                    + playlists.get(index - 1).name
+            );
+
+            playlists.remove(index - 1);
+
+            System.out.println("ลบ Playlist สำเร็จ!");
+
+        } else {
+            System.out.println("ไม่พบ Playlist");
+        }
+    }
+}
